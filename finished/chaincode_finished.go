@@ -41,7 +41,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		return nil, errors.New("Incorrect number of arguments. Expecting 1")
 	}
 
-	err := stub.PutState("document_scrap", []byte(args[0]))
+	err := stub.PutState("changing state in init ", []byte(args[0]))
 	if err != nil {
 		return nil, err
 	}
@@ -72,11 +72,11 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 	if function == "read" { //read a variable
 		return t.read(stub, args)
 	}
-	
+
 	if function == "read_number" { //read a variable
 		return t.read_number(stub, args)
 	}
-	
+
 	fmt.Println("query did not find func: " + function)
 
 	return nil, errors.New("Received unknown function query: " + function)
