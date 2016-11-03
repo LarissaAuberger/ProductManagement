@@ -169,7 +169,7 @@ func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte,
 	if err != nil {
 		jsonResp = "{\"Error\":\"Failed to get state for " + key + "\"}"
 		// WIoTP REST API --> event für Device "BCFakeDetector" eventtype "fake-alert" JSON {"PID":"<replace-me>","fake":"true"}
-		url := "http://20wql7.messaging.internetofthings.ibmcloud.com:1883/api/v0002/application/types/typeFakeDetector/devices/BCFakeDetector/events/fake-alert"
+		url := "http://20wql7.messaging.internetofthings.ibmcloud.com:1883/api/v0002/application/types/FakeDetector/devices/BCFakeDetector/events/fake-alert"
     //https://orgId.messaging.internetofthings.ibmcloud.com:8883/api/v0002/application/types/typeId/devices/deviceId/events/eventId
     //fmt.Println("URL:>", url)
     var jsonStr = []byte(`{"PID":"<replace-me>","fake":"true"}`)
