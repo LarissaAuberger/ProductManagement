@@ -22,7 +22,7 @@ import (
 	"encoding/json"
   // "io/ioutil"
   // "net/http"
-	// "encoding/base64"
+	 "encoding/base64"
   //  "bytes"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
