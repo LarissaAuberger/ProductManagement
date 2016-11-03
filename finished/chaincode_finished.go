@@ -112,7 +112,7 @@ func (t *SimpleChaincode) add_product(stub *shim.ChaincodeStub, args []string) (
 	var err error
 
 	fmt.Println("running add_product()")
-
+	
 	var product Product
 	json.Unmarshal([]byte(args[0]), &product)
 
