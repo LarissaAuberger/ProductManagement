@@ -20,10 +20,10 @@ import (
 	"errors"
 	"fmt"
 	"encoding/json"
-  "io/ioutil"
-  "net/http"
-	"encoding/base64"
-   "bytes"
+  // "io/ioutil"
+  // "net/http"
+	// "encoding/base64"
+  //  "bytes"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
