@@ -19,6 +19,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"encoding/json"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -28,15 +29,21 @@ import (
 type SimpleChaincode struct {
 }
 
-type Company struct {
+type Manufacturer struct {
 	CompanyName string `json:"CompanyName"`
 }
 
 type Product struct {
-	PID	string `json:"PID"`
-	ProductionDate int `json:"ProductionDate"`
-	Manufacturer Company `json:"Manufacturer"`
-	PlantCode string `json:"PlantCode"`
+	PID								string `json:"pid"`
+	ProductionDate 		int `json:"productionDate"`
+	Manufacturer 			string `json:"manufacturer"`
+	PlantCode 				string `json:"plantCode"`
+}
+
+type ProductDetails struct {
+	ProductionDate 		int `json:"productionDate"`
+	Manufacturer 			string `json:"manufacturer"`
+	PlantCode 				string `json:"plantCode"`
 }
 
 func main() {
@@ -98,19 +105,29 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 
 // write - invoke function to add a production to the blockchain
 func (t *SimpleChaincode) add_product(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	var pid, details string
-
+	////// args
+	// [0]		[1]
+	// pid		jsonString of product
+	var pid string
 	var err error
-	fmt.Println("running write()")
 
-	if len(args) != 2 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 2. name of the key and value to set")
+	fmt.Println("running add_product()")
+
+  detailsAsJasonBytes1, _:= json.Marshal (args[0])
+
+	var product Product
+	json.Unmarshal(detailsAsJasonBytes1, &product)
+
+	pid = product.PID
+	details := ProductDetails {
+		ProductionDate: product.ProductionDate,
+		Manufacturer: product.Manufacturer,
+		PlantCode: product.PlantCode,
 	}
 
-	pid = args[0]
-	details = args[1]
+	detailsAsJasonBytes2, _:= json.Marshal (details)
 
-	err = stub.PutState(pid, []byte(details)) //write the product into the chaincode state
+	err = stub.PutState(pid, []byte(detailsAsJasonBytes2)) //write the product into the chaincode state
 	if err != nil {
 		return nil, err
 	}
