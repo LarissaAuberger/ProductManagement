@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"encoding/json"
   "io/ioutil"
-  "log"
   "net/http"
 	"encoding/base64"
    "bytes"
