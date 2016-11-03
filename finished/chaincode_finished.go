@@ -168,28 +168,28 @@ func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte,
 	key = args[0]
 	valAsbytes, err := stub.GetState(key)
 	if err != nil {
-		// WIoTP REST API --> event für Device "BCFakeDetector" eventtype "fake-alert" JSON {"PID":"<replace-me>","fake":"true"}
-		url := "http://20wql7.messaging.internetofthings.ibmcloud.com:1883/api/v0002/application/types/FakeDetector/devices/BCFakeDetector/events/fake-alert"
-    //https://orgId.messaging.internetofthings.ibmcloud.com:8883/api/v0002/application/types/typeId/devices/deviceId/events/eventId
-    //fmt.Println("URL:>", url)
-    var jsonStr = []byte("{ \"PID\":\"<replace-me>\",\"fake\":\"true\"}")
-    req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
-    //req.Header.Set("X-Custom-Header", "myvalue")
-    req.Header.Set("Content-Type", "application/json")
-		var user string = "a-20wql7-b28fat8pmw"
-		var password string = "T)DwTzn+plN*9tL38N"
-		req.Header.Add("Authorization","Basic "+basicAuth(user, password))
-
-    client := &http.Client{}
-    resp, err := client.Do(req)
-    if err != nil {
-        panic(err)
-    }
-    defer resp.Body.Close()
-    //fmt.Println("response Status:", resp.Status)
-    //fmt.Println("response Headers:", resp.Header)
-    body, _ := ioutil.ReadAll(resp.Body)
-    fmt.Println("response Body:", string(body))
+		// // WIoTP REST API --> event für Device "BCFakeDetector" eventtype "fake-alert" JSON {"PID":"<replace-me>","fake":"true"}
+		// url := "http://20wql7.messaging.internetofthings.ibmcloud.com:1883/api/v0002/application/types/FakeDetector/devices/BCFakeDetector/events/fake-alert"
+    // //https://orgId.messaging.internetofthings.ibmcloud.com:8883/api/v0002/application/types/typeId/devices/deviceId/events/eventId
+    // //fmt.Println("URL:>", url)
+    // var jsonStr = []byte("{ \"PID\":\"<replace-me>\",\"fake\":\"true\"}")
+    // req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+    // //req.Header.Set("X-Custom-Header", "myvalue")
+    // req.Header.Set("Content-Type", "application/json")
+		// var user string = "a-20wql7-b28fat8pmw"
+		// var password string = "T)DwTzn+plN*9tL38N"
+		// req.Header.Add("Authorization","Basic "+basicAuth(user, password))
+		//
+    // client := &http.Client{}
+    // resp, err := client.Do(req)
+    // if err != nil {
+    //     panic(err)
+    // }
+    // defer resp.Body.Close()
+    // //fmt.Println("response Status:", resp.Status)
+    // //fmt.Println("response Headers:", resp.Header)
+    // body, _ := ioutil.ReadAll(resp.Body)
+    // fmt.Println("response Body:", string(body))
 
 
 		jsonResp = "{\"Error\":\"Failed to get state for " + key + "\"}"
