@@ -28,6 +28,17 @@ import (
 type SimpleChaincode struct {
 }
 
+type Company struct {
+	CompanyName string `json:"CompanyName"`
+}
+
+type Product struct {
+	PID	string `json:"PID"`
+	ProductionDate int `json:"ProductionDate"`
+	Manufacturer Company `json:"Manufacturer"`
+	PlantCode string `json:"PlantCode"`
+}
+
 func main() {
 	err := shim.Start(new(SimpleChaincode))
 	if err != nil {
@@ -58,7 +69,10 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 		return t.Init(stub, "init", args)
 	} else if function == "write" {
 		return t.write(stub, args)
+	} else if function == "add_product" {
+		return t.add_product(stub, args)
 	}
+
 	fmt.Println("invoke did not find func: " + function)
 
 	return nil, errors.New("Received unknown function invocation: " + function)
@@ -81,6 +95,29 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 
 	return nil, errors.New("Received unknown function query: " + function)
 }
+
+// write - invoke function to add a production to the blockchain
+func (t *SimpleChaincode) add_product(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	var pid, details string
+
+	var err error
+	fmt.Println("running write()")
+
+	if len(args) != 2 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 2. name of the key and value to set")
+	}
+
+	pid = args[0]
+	details = args[1]
+
+	err = stub.PutState(pid, []byte(details)) //write the product into the chaincode state
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
+
+}
+
 
 // write - invoke function to write key/value pair
 func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
@@ -105,8 +142,7 @@ func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte
 func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	var key, jsonResp string
 	var err error
-
-	if len(args) != 1 {
+  if len(args) != 1 {
 		return nil, errors.New("Incorrect number of arguments. Expecting name of the key to query")
 	}
 
