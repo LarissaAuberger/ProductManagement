@@ -113,10 +113,8 @@ func (t *SimpleChaincode) add_product(stub *shim.ChaincodeStub, args []string) (
 
 	fmt.Println("running add_product()")
 
-  detailsAsJasonBytes1, _:= json.Marshal (args[0])
-
 	var product Product
-	json.Unmarshal(detailsAsJasonBytes1, &product)
+	json.Unmarshal([]byte(args[0]), &product)
 
 	pid = product.PID
 	details := ProductDetails {
@@ -125,16 +123,15 @@ func (t *SimpleChaincode) add_product(stub *shim.ChaincodeStub, args []string) (
 		PlantCode: product.PlantCode,
 	}
 
-	detailsAsJasonBytes2, _:= json.Marshal (details)
+	detailsAsJasonBytes, _:= json.Marshal (details)
 
-	err = stub.PutState(pid, []byte(detailsAsJasonBytes2)) //write the product into the chaincode state
+	err = stub.PutState(pid, []byte(detailsAsJasonBytes)) //write the product into the chaincode state
 	if err != nil {
 		return nil, err
 	}
 	return nil, nil
 
 }
-
 
 // write - invoke function to write key/value pair
 func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
