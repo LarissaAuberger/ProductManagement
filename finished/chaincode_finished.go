@@ -82,16 +82,6 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		return nil, errors.New("Incorrect number of arguments. Expecting 1")
 	}
 
-	// err := stub.CreateTable("MappCodes", []*shim.ColumnDefinition{
-	//                   &shim.ColumnDefinition{Name: "Uuid", Type: shim.ColumnDefinition_STRING, Key: true},
-	//                   &shim.ColumnDefinition{Name: "GeneratingCompanyId", Type: shim.ColumnDefinition_STRING, Key: true},
-	//                   &shim.ColumnDefinition{Name: "AssignedCompanyId", Type: shim.ColumnDefinition_STRING, Key: true},
-	//                   &shim.ColumnDefinition{Name: "AssignedToProduct", Type: shim.ColumnDefinition_BOOL, Key: false},
-	//           })
-	//           if err != nil {
-  //              return nil, errors.New("Could not create table MappCodes")
-	//           }
-
 	err := stub.PutState("changing state in init ", []byte(args[0]))
 	if err != nil {
 		return nil, err
@@ -182,17 +172,6 @@ func (t *SimpleChaincode) add_shipping_details (stub *shim.ChaincodeStub, args [
 	json.Unmarshal([]byte(args[0]), &shipment)
 	var key = shipment.Id
 
-	// _, err := stub.InsertRow("Products", shim.Row{
-	//        | Destination | Location   `json:"destination"`
-	// 	 Columns: []*shim.Column{            CarrierId               string          `json:"carrierId"`              // reference to company ID
-  //    &shim.Column{Value: &shim.Column_String_{String_: args[0]}},                         |          DepartureTimestamp      int             `json:"departureTimestamp"`
-  //                            &shim.Column{Value: &shim.Column_Integer_{Integer_: strconv.atoi(args[1]}},          |          ArrivalTimestamp        int             `json:"arrivalTimestamp"`
-  //                            &shim.Column{Value: &shim.Column_String_{String_: args[2]}},                         |  }
-  //                                &shim.Column{Value: &shim.Column_String_{String_: "mymanufacturerid"}}},             |
-  //                })                                                                                                   |  type Location struct {
-  //
-	//
-
 	valAsbytes, err := stub.GetState(key)
 	if err != nil {
 
@@ -209,7 +188,7 @@ func (t *SimpleChaincode) add_shipping_details (stub *shim.ChaincodeStub, args [
 	shipmentAsJsonBytes, _ := json.Marshal (details)
 	valAsbytes = append(valAsbytes, shipmentAsJsonBytes[0])
 // 	err = stub.PutState(key, []byte(valAsbytes))
-	err = stub.PutState(key, []byte(shipmentAsJsonBytes))
+	err = stub.PutState(key, []byte(valAsbytes))
 	if err != nil {
 		return nil, err
 	}
@@ -270,7 +249,11 @@ func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte,
     //fmt.Println("response Headers:", resp.Header)
     body, _ := ioutil.ReadAll(resp.Body)
     fmt.Println("response Body:", string(body))
-	}
+	} else {
+
+		}
+
+	//	shipmentAsJsonBytes, _ := json.Marshal (details)
 
 	if err != nil {
 		jsonResp = "{\"Error\":\"Failed to get state for " + key + "\"}"
