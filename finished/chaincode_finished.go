@@ -82,6 +82,16 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 		return nil, errors.New("Incorrect number of arguments. Expecting 1")
 	}
 
+	// err := stub.CreateTable("MappCodes", []*shim.ColumnDefinition{
+	//                   &shim.ColumnDefinition{Name: "Uuid", Type: shim.ColumnDefinition_STRING, Key: true},
+	//                   &shim.ColumnDefinition{Name: "GeneratingCompanyId", Type: shim.ColumnDefinition_STRING, Key: true},
+	//                   &shim.ColumnDefinition{Name: "AssignedCompanyId", Type: shim.ColumnDefinition_STRING, Key: true},
+	//                   &shim.ColumnDefinition{Name: "AssignedToProduct", Type: shim.ColumnDefinition_BOOL, Key: false},
+	//           })
+	//           if err != nil {
+  //              return nil, errors.New("Could not create table MappCodes")
+	//           }
+
 	err := stub.PutState("changing state in init ", []byte(args[0]))
 	if err != nil {
 		return nil, err
@@ -161,7 +171,7 @@ func (t *SimpleChaincode) register_product(stub *shim.ChaincodeStub, args []stri
 func (t *SimpleChaincode) add_shipping_details (stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	var err error
 
-	
+
 	if len(args) != 1 {
 		return nil, errors.New("Incorrect number of arguments. Expecting name of the key to query")
 	}
@@ -170,7 +180,7 @@ func (t *SimpleChaincode) add_shipping_details (stub *shim.ChaincodeStub, args [
 
 	var shipment Shipment;
 	json.Unmarshal([]byte(args[0]), &shipment)
-	var pid = shipment.Id
+	var key = shipment.Id
 
 	details := ShipmentDetails {
 		Origin: shipment.Origin,
@@ -180,9 +190,26 @@ func (t *SimpleChaincode) add_shipping_details (stub *shim.ChaincodeStub, args [
 		ArrivalDate: shipment.ArrivalDate,
 	}
 
+	// _, err := stub.InsertRow("Products", shim.Row{
+	//        | Destination | Location   `json:"destination"`
+	// 	 Columns: []*shim.Column{            CarrierId               string          `json:"carrierId"`              // reference to company ID
+  //    &shim.Column{Value: &shim.Column_String_{String_: args[0]}},                         |          DepartureTimestamp      int             `json:"departureTimestamp"`
+  //                            &shim.Column{Value: &shim.Column_Integer_{Integer_: strconv.atoi(args[1]}},          |          ArrivalTimestamp        int             `json:"arrivalTimestamp"`
+  //                            &shim.Column{Value: &shim.Column_String_{String_: args[2]}},                         |  }
+  //                                &shim.Column{Value: &shim.Column_String_{String_: "mymanufacturerid"}}},             |
+  //                })                                                                                                   |  type Location struct {
+  //
+	//
+
+	valAsbytes, err := stub.GetState(key)
+	if err != nil {
+
+	}
 
 	shipmentAsJsonBytes, _ := json.Marshal (details)
-	err = stub.PutState(pid, []byte(shipmentAsJsonBytes))
+
+	valAsbytes = append(valAsbytes, shipmentAsJsonBytes[0])
+	err = stub.PutState(key, []byte(valAsbytes))
 	if err != nil {
 		return nil, err
 	}
