@@ -42,6 +42,7 @@ type Product struct {
 	ProductionDate 		int `json:"productionDate"`
 	Manufacturer 			string `json:"manufacturer"`
 	PlantCode 				string `json:"plantCode"`
+	Shipments         []Shipment `json:"shimpents"`
 }
 
 type ProductDetails struct {
@@ -58,16 +59,6 @@ type Shipment struct {
 	DepartureDate			int `json:"departureDate"`
 	ArrivalDate				int `json:"arrivalDate"`
 }
-
-type ShipmentDetails struct {
-	Origin						string `json:"origin"`
-	Destination				string `json:"destination"`
-	Carrier						string `json:"carrier"`
-	DepartureDate			int `json:"departureDate"`
-	ArrivalDate				int `json:"arrivalDate"`
-}
-
-
 
 func main() {
 	err := shim.Start(new(SimpleChaincode))
@@ -101,8 +92,8 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 		return t.write(stub, args)
 	} else if function == "register_product" {
 		return t.register_product(stub, args)
-	} else if function == "add_shipping_details" {
-		return t.add_shipping_details(stub, args)
+	} else if function == "add_shipment" {
+		return t.add_shipment(stub, args)
 	}
 
 	fmt.Println("invoke did not find func: " + function)
@@ -117,8 +108,6 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 	// Handle different functions
 	if function == "read" { //read a variable
 		return t.read(stub, args)
-	} else if function == "scan"  {
-		return t.scan(stub, args)
 	}
 
 	if function == "read_number" { //read a variable
@@ -160,7 +149,8 @@ func (t *SimpleChaincode) register_product(stub *shim.ChaincodeStub, args []stri
 
 }
 
-func (t *SimpleChaincode) add_shipping_details (stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+
+func (t *SimpleChaincode) add_shipment (stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	var err error
 
 
@@ -170,15 +160,32 @@ func (t *SimpleChaincode) add_shipping_details (stub *shim.ChaincodeStub, args [
 
 	fmt.Println("running add_shipping()")
 
-	var shipment Shipment;
-	json.Unmarshal([]byte(args[0]), &shipment)
-	var key = shipment.Id
+  var shipment Shipment
+	json.Unmarshal([]byte(args[1]), &shipment)
 
-	valAsbytes, err := stub.GetState(key)
-	if err != nil {
-
+	details := Shipment {
+		Id: shipment.Id,
+		Origin: shipment.Origin,
+		Destination: shipment.Destination,
+		Carrier: shipment.Carrier,
+		DepartureDate: shipment.DepartureDate,
+		ArrivalDate: shipment.ArrivalDate,
 	}
 
+	var p Product
+	var product_id = args[0]
+	pAsBytes, err := stub.GetState(product_id)
+	json.Unmarshal(pAsBytes, &p)
+
+	p.Shipments = append(p.Shipments, details)
+	pAsBytes, err = json.Marshal(p)
+	err = stub.PutState(product_id, pAsBytes)
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
+
+/*
 	details := ShipmentDetails {
 		Origin: shipment.Origin,
 		Destination: shipment.Destination,
@@ -188,13 +195,8 @@ func (t *SimpleChaincode) add_shipping_details (stub *shim.ChaincodeStub, args [
 	}
 
 	shipmentAsJsonBytes, _ := json.Marshal (details)
-	valAsbytes = append(valAsbytes, shipmentAsJsonBytes[0])
-
-	err = stub.PutState(key, []byte(valAsbytes))
-	if err != nil {
-		return nil, err
-	}
-	return nil, nil
+	valAsbytes = append(valAsbytes, shipmentAsJsonBytes)
+*/
 }
 
 // write - invoke function to write key/value pair
@@ -229,71 +231,6 @@ func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte,
 	key = args[0]
 	valAsbytes, err := stub.GetState(key)
 	if valAsbytes == nil || len(valAsbytes) == 0 {
-		// WIoTP REST API --> event für Device "BCFakeDetector" eventtype "fake-alert" JSON {"PID":"<replace-me>","fake":"true"}
-		url := "http://20wql7.messaging.internetofthings.ibmcloud.com:1883/api/v0002/application/types/FakeDetector/devices/BCFakeDetector/events/fake-alert"
-    //https://orgId.messaging.internetofthings.ibmcloud.com:8883/api/v0002/application/types/typeId/devices/deviceId/events/eventId
-    //fmt.Println("URL:>", url)
-    var jsonStr = []byte("{ \"PID\":\"<replace-me>\",\"fake\":\"true\"}")
-    req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
-    //req.Header.Set("X-Custom-Header", "myvalue")
-    req.Header.Set("Content-Type", "application/json")
-		var user string = "a-20wql7-b28fat8pmw"
-		var password string = "T)DwTzn+plN*9tL38N"
-		req.Header.Add("Authorization","Basic "+basicAuth(user, password))
-
-    client := &http.Client{}
-    resp, err := client.Do(req)
-    if err != nil {
-        panic(err)
-    }
-    defer resp.Body.Close()
-    //fmt.Println("response Status:", resp.Status)
-    //fmt.Println("response Headers:", resp.Header)
-    body, _ := ioutil.ReadAll(resp.Body)
-    fmt.Println("response Body:", string(body))
-	} else {
-
-		}
-
-	//	shipmentAsJsonBytes, _ := json.Marshal (details)
-
-	if err != nil {
-		jsonResp = "{\"Error\":\"Failed to get state for " + key + "\"}"
-		return nil, errors.New(jsonResp)
-	}
-
-	return valAsbytes, nil
-}
-
-func (t *SimpleChaincode) scan(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	var key, jsonResp, scan_location string
-	var err error
-  if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting name of the key to query")
-	}
-
-	key = args[0]
-	scan_location = args[1]
-	valAsbytes, err := stub.GetState(key)
-
-
-	type Object struct {
-		PID								string `json:"pid"`
-		ProductionDate 		int `json:"productionDate"`
-		Manufacturer 			string `json:"manufacturer"`
-		PlantCode 				string `json:"plantCode"`
-		Origin						string `json:"origin"`
-		Destination				string `json:"destination"`
-		Carrier						string `json:"carrier"`
-		DepartureDate			int `json:"departureDate"`
-		ArrivalDate				int `json:"arrivalDate"`
-	}
-
-	var object Object;
-	json.Unmarshal([]byte(args[0]), &object)
-	key = object.PID
-
-	if scan_location != object.Destination {
 		// WIoTP REST API --> event für Device "BCFakeDetector" eventtype "fake-alert" JSON {"PID":"<replace-me>","fake":"true"}
 		url := "http://20wql7.messaging.internetofthings.ibmcloud.com:1883/api/v0002/application/types/FakeDetector/devices/BCFakeDetector/events/fake-alert"
     //https://orgId.messaging.internetofthings.ibmcloud.com:8883/api/v0002/application/types/typeId/devices/deviceId/events/eventId
