@@ -208,7 +208,8 @@ func (t *SimpleChaincode) add_shipping_details (stub *shim.ChaincodeStub, args [
 
 	shipmentAsJsonBytes, _ := json.Marshal (details)
 	valAsbytes = append(valAsbytes, shipmentAsJsonBytes[0])
-	err = stub.PutState(key, []byte(valAsbytes))
+// 	err = stub.PutState(key, []byte(valAsbytes))
+	err = stub.PutState(key, []byte(shipmentAsJsonBytes))
 	if err != nil {
 		return nil, err
 	}
