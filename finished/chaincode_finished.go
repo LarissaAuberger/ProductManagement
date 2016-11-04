@@ -50,6 +50,25 @@ type ProductDetails struct {
 	PlantCode 				string `json:"plantCode"`
 }
 
+type Shipment struct {
+	Id								string `json:"id"`
+	Origin						string `json:"origin"`
+	Destination				string `json:"destination"`
+	Carrier						string `json:"carrier"`
+	DepartureDate			int `json:"departureDate"`
+	ArrivalDate				int `json:"arrivalDate"`
+}
+
+type ShipmentDetails struct {
+	Origin						string `json:"origin"`
+	Destination				string `json:"destination"`
+	Carrier						string `json:"carrier"`
+	DepartureDate			int `json:"departureDate"`
+	ArrivalDate				int `json:"arrivalDate"`
+}
+
+
+
 func main() {
 	err := shim.Start(new(SimpleChaincode))
 	if err != nil {
@@ -80,8 +99,10 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 		return t.Init(stub, "init", args)
 	} else if function == "write" {
 		return t.write(stub, args)
-	} else if function == "add_product" {
-		return t.add_product(stub, args)
+	} else if function == "register_product" {
+		return t.register_product(stub, args)
+	} else if function == "add_shipping_details" {
+		return t.add_shipping_details(stub, args)
 	}
 
 	fmt.Println("invoke did not find func: " + function)
@@ -108,14 +129,14 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 }
 
 // write - invoke function to add a production to the blockchain
-func (t *SimpleChaincode) add_product(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) register_product(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	////// args
 	// [0]		[1]
 	// pid		jsonString of product
 	var pid string
 	var err error
 
-	fmt.Println("running add_product()")
+	fmt.Println("running register_product()")
 
 	var product Product
 	json.Unmarshal([]byte(args[0]), &product)
@@ -127,14 +148,45 @@ func (t *SimpleChaincode) add_product(stub *shim.ChaincodeStub, args []string) (
 		PlantCode: product.PlantCode,
 	}
 
-	detailsAsJasonBytes, _:= json.Marshal (details)
+	detailsAsJsonBytes, _:= json.Marshal (details)
 
-	err = stub.PutState(pid, []byte(detailsAsJasonBytes)) //write the product into the chaincode state
+	err = stub.PutState(pid, []byte(detailsAsJsonBytes)) //write the product into the chaincode state
 	if err != nil {
 		return nil, err
 	}
 	return nil, nil
 
+}
+
+func (t *SimpleChaincode) add_shipping_details (stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+	var err error
+
+	
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting name of the key to query")
+	}
+
+	fmt.Println("running add_shipping()")
+
+	var shipment Shipment;
+	json.Unmarshal([]byte(args[0]), &shipment)
+	var pid = shipment.Id
+
+	details := ShipmentDetails {
+		Origin: shipment.Origin,
+		Destination: shipment.Destination,
+		Carrier: shipment.Carrier,
+		DepartureDate: shipment.DepartureDate,
+		ArrivalDate: shipment.ArrivalDate,
+	}
+
+
+	shipmentAsJsonBytes, _ := json.Marshal (details)
+	err = stub.PutState(pid, []byte(shipmentAsJsonBytes))
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }
 
 // write - invoke function to write key/value pair
@@ -155,6 +207,7 @@ func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte
 	}
 	return nil, nil
 }
+
 
 
 // read - query function to read key/value pair
