@@ -182,14 +182,6 @@ func (t *SimpleChaincode) add_shipping_details (stub *shim.ChaincodeStub, args [
 	json.Unmarshal([]byte(args[0]), &shipment)
 	var key = shipment.Id
 
-	details := ShipmentDetails {
-		Origin: shipment.Origin,
-		Destination: shipment.Destination,
-		Carrier: shipment.Carrier,
-		DepartureDate: shipment.DepartureDate,
-		ArrivalDate: shipment.ArrivalDate,
-	}
-
 	// _, err := stub.InsertRow("Products", shim.Row{
 	//        | Destination | Location   `json:"destination"`
 	// 	 Columns: []*shim.Column{            CarrierId               string          `json:"carrierId"`              // reference to company ID
@@ -206,8 +198,15 @@ func (t *SimpleChaincode) add_shipping_details (stub *shim.ChaincodeStub, args [
 
 	}
 
-	shipmentAsJsonBytes, _ := json.Marshal (details)
+	details := ShipmentDetails {
+		Origin: shipment.Origin,
+		Destination: shipment.Destination,
+		Carrier: shipment.Carrier,
+		DepartureDate: shipment.DepartureDate,
+		ArrivalDate: shipment.ArrivalDate,
+	}
 
+	shipmentAsJsonBytes, _ := json.Marshal (details)
 	valAsbytes = append(valAsbytes, shipmentAsJsonBytes[0])
 	err = stub.PutState(key, []byte(valAsbytes))
 	if err != nil {
