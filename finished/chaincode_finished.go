@@ -45,11 +45,6 @@ type Product struct {
 	Shipments         []Shipment `json:"shimpents"`
 }
 
-type ProductDetails struct {
-	ProductionDate 		int `json:"productionDate"`
-	Manufacturer 			string `json:"manufacturer"`
-	PlantCode 				string `json:"plantCode"`
-}
 
 type Shipment struct {
 	Id								string `json:"id"`
@@ -133,7 +128,8 @@ func (t *SimpleChaincode) register_product(stub *shim.ChaincodeStub, args []stri
 	json.Unmarshal([]byte(args[0]), &product)
 
 	pid = product.PID
-	details := ProductDetails {
+	details := Product {
+	  PID: product.PID,
 		ProductionDate: product.ProductionDate,
 		Manufacturer: product.Manufacturer,
 		PlantCode: product.PlantCode,
