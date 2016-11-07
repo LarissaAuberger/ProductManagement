@@ -173,26 +173,16 @@ func (t *SimpleChaincode) add_shipment (stub *shim.ChaincodeStub, args []string)
 	pAsBytes, err := stub.GetState(product_id)
 	json.Unmarshal(pAsBytes, &p)
 
-	p.Shipments = append(p.Shipments, details)
+//	p.Shipments = append(p.Shipments, details)
+  p.Shipments[0].Id = shipment.Id
+	p.Shipments[0].Destination = shipment.Destination
+	
 	pAsBytes, err = json.Marshal(p)
 	err = stub.PutState(product_id, pAsBytes)
 	if err != nil {
 		return nil, err
 	}
 	return nil, nil
-
-/*
-	details := ShipmentDetails {
-		Origin: shipment.Origin,
-		Destination: shipment.Destination,
-		Carrier: shipment.Carrier,
-		DepartureDate: shipment.DepartureDate,
-		ArrivalDate: shipment.ArrivalDate,
-	}
-
-	shipmentAsJsonBytes, _ := json.Marshal (details)
-	valAsbytes = append(valAsbytes, shipmentAsJsonBytes)
-*/
 }
 
 // write - invoke function to write key/value pair
