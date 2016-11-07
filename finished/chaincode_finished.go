@@ -149,22 +149,26 @@ func (t *SimpleChaincode) register_product(stub *shim.ChaincodeStub, args []stri
 func (t *SimpleChaincode) add_shipment (stub *shim.ChaincodeStub, args []string) ([]byte, error) {
 	var err error
 
-
-	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting name of the key to query")
-	}
-
-	fmt.Println("running add_shipping()")
+	fmt.Println("running add_shipment()")
 
   var shipment Shipment
 	json.Unmarshal([]byte(args[1]), &shipment)
+
+	details := Shipment {
+		Id: shipment.Id,
+		Origin: shipment.Origin,
+		Destination: shipment.Destination,
+		Carrier: shipment.Carrier,
+		DepartureDate: shipment.DepartureDate,
+		ArrivalDate: shipment.ArrivalDate,
+	}
 
 	var p Product
 	var product_id = args[0]
 	pAsBytes, err := stub.GetState(product_id)
 	json.Unmarshal(pAsBytes, &p)
 
-  p.Shipments = append(p.Shipments, shipment)
+  p.Shipments = append(p.Shipments, details)
 
 	pAsBytes, err = json.Marshal(p)
 	err = stub.PutState(product_id, pAsBytes)
