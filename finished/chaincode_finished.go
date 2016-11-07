@@ -24,6 +24,7 @@ import (
   "net/http"
 	 "encoding/base64"
    "bytes"
+	 "strings"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -214,8 +215,9 @@ func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte,
 	var product Product
 	json.Unmarshal([]byte(args[0]), &product)
 
- if product.Shipments[0].Destination != location {
-// if details.Destination != location {
+
+// if product.Shipments[0].Destination == location  {
+if location == "China" {
 //	if valAsbytes == nil || len(valAsbytes) == 0  {
 		// WIoTP REST API --> event für Device "BCFakeDetector" eventtype "fake-alert" JSON {"PID":"<replace-me>","fake":"true"}
 		url := "http://20wql7.messaging.internetofthings.ibmcloud.com:1883/api/v0002/application/types/FakeDetector/devices/BCFakeDetector/events/fake-alert"
