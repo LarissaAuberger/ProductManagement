@@ -163,7 +163,7 @@ func (t *SimpleChaincode) add_shipment (stub *shim.ChaincodeStub, args []string)
   var shipment Shipment
 	json.Unmarshal([]byte(args[1]), &shipment)
 
-	details := Shipment {
+	var details = Shipment {
 		Id: shipment.Id,
 		Origin: shipment.Origin,
 		Destination: shipment.Destination,
