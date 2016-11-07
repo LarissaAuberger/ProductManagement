@@ -214,7 +214,8 @@ func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte,
 	var product Product
 	json.Unmarshal([]byte(args[0]), &product)
 
-	if product.Shipments[0].Destination != location {
+// if product.Shipments[0].Destination != location
+	if valAsbytes == nil || len(valAsbytes) == 0  {
 		// WIoTP REST API --> event für Device "BCFakeDetector" eventtype "fake-alert" JSON {"PID":"<replace-me>","fake":"true"}
 		url := "http://20wql7.messaging.internetofthings.ibmcloud.com:1883/api/v0002/application/types/FakeDetector/devices/BCFakeDetector/events/fake-alert"
     //https://orgId.messaging.internetofthings.ibmcloud.com:8883/api/v0002/application/types/typeId/devices/deviceId/events/eventId
@@ -237,7 +238,7 @@ func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte,
     //fmt.Println("response Headers:", resp.Header)
     body, _ := ioutil.ReadAll(resp.Body)
     fmt.Println("response Body:", string(body))
-	} else {
+	} else  {
 
 		}
 
