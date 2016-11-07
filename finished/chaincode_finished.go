@@ -159,14 +159,14 @@ func (t *SimpleChaincode) add_shipment (stub *shim.ChaincodeStub, args []string)
   var shipment Shipment
 	json.Unmarshal([]byte(args[1]), &shipment)
 
-	var details = Shipment {
-		Id: shipment.Id,
-		Origin: shipment.Origin,
-		Destination: shipment.Destination,
-		Carrier: shipment.Carrier,
-		DepartureDate: shipment.DepartureDate,
-		ArrivalDate: shipment.ArrivalDate,
-	}
+	// var details = Shipment {
+	// 	Id: shipment.Id,
+	// 	Origin: shipment.Origin,
+	// 	Destination: shipment.Destination,
+	// 	Carrier: shipment.Carrier,
+	// 	DepartureDate: shipment.DepartureDate,
+	// 	ArrivalDate: shipment.ArrivalDate,
+	// }
 
 	var p Product
 	var product_id = args[0]
@@ -176,7 +176,7 @@ func (t *SimpleChaincode) add_shipment (stub *shim.ChaincodeStub, args []string)
 //	p.Shipments = append(p.Shipments, details)
   p.Shipments[0].Id = shipment.Id
 	p.Shipments[0].Destination = shipment.Destination
-	
+
 	pAsBytes, err = json.Marshal(p)
 	err = stub.PutState(product_id, pAsBytes)
 	if err != nil {
