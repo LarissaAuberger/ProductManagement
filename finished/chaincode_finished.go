@@ -201,15 +201,20 @@ func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte
 
 // read - query function to read key/value pair
 func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	var key, jsonResp string
+	var key, jsonResp, location string
 	var err error
-  if len(args) != 1 {
+  if len(args) != 2 {
 		return nil, errors.New("Incorrect number of arguments. Expecting name of the key to query")
 	}
 
 	key = args[0]
+	location = args [1]
+
 	valAsbytes, err := stub.GetState(key)
-	if valAsbytes == nil || len(valAsbytes) == 0 {
+	var product Product
+	json.Unmarshal([]byte(args[0]), &product)
+
+	if product.Shipments[0].Destination != location {
 		// WIoTP REST API --> event für Device "BCFakeDetector" eventtype "fake-alert" JSON {"PID":"<replace-me>","fake":"true"}
 		url := "http://20wql7.messaging.internetofthings.ibmcloud.com:1883/api/v0002/application/types/FakeDetector/devices/BCFakeDetector/events/fake-alert"
     //https://orgId.messaging.internetofthings.ibmcloud.com:8883/api/v0002/application/types/typeId/devices/deviceId/events/eventId
