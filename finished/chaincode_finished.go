@@ -133,6 +133,7 @@ func (t *SimpleChaincode) register_product(stub *shim.ChaincodeStub, args []stri
 		ProductionDate: product.ProductionDate,
 		Manufacturer: product.Manufacturer,
 		PlantCode: product.PlantCode,
+
 	}
 
 	detailsAsJsonBytes, _:= json.Marshal (details)
@@ -174,13 +175,21 @@ func (t *SimpleChaincode) add_shipment (stub *shim.ChaincodeStub, args []string)
 	json.Unmarshal(pAsBytes, &p)
 
 //	p.Shipments = append(p.Shipments, details)
-  p.Shipments[0] = Shipment {
-		Id: shipment.Id,
-		Origin: shipment.Origin,
-		Destination: shipment.Destination,
-		Carrier: shipment.Carrier,
-		DepartureDate: shipment.DepartureDate,
-		ArrivalDate: shipment.ArrivalDate,
+  // p.Shipments[0] = Shipment {
+	// 	Id: shipment.Id,
+	// 	Origin: shipment.Origin,
+	// 	Destination: shipment.Destination,
+	// 	Carrier: shipment.Carrier,
+	// 	DepartureDate: shipment.DepartureDate,
+	// 	ArrivalDate: shipment.ArrivalDate,
+	// }
+	p.Shipments[0] = Shipment {
+		Id: "444",
+		Origin: "Stuttgart",
+		Destination: "Germany",
+		Carrier: "carrier1",
+		DepartureDate: 12345,
+		ArrivalDate: 12345,
 	}
 
 	pAsBytes, err = json.Marshal(p)
