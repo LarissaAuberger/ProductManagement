@@ -24,7 +24,6 @@ import (
   "net/http"
 	 "encoding/base64"
    "bytes"
-	 "strings"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
