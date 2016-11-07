@@ -174,8 +174,14 @@ func (t *SimpleChaincode) add_shipment (stub *shim.ChaincodeStub, args []string)
 	json.Unmarshal(pAsBytes, &p)
 
 //	p.Shipments = append(p.Shipments, details)
-  p.Shipments[0].Id = shipment.Id
-	p.Shipments[0].Destination = shipment.Destination
+  p.Shipments[0] = Shipment {
+		Id: shipment.Id,
+		Origin: shipment.Origin,
+		Destination: shipment.Destination,
+		Carrier: shipment.Carrier,
+		DepartureDate: shipment.DepartureDate,
+		ArrivalDate: shipment.ArrivalDate,
+	}
 
 	pAsBytes, err = json.Marshal(p)
 	err = stub.PutState(product_id, pAsBytes)
