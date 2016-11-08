@@ -207,14 +207,15 @@ func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte,
 		return nil, errors.New("Incorrect number of arguments. Expecting name of the key to query")
 	}
 
-	key = args[0]
 	var location = args [1]
+	var product Product
+	key = args[0]
 
 	valAsbytes, err := stub.GetState(key)
-	var product Product
 	json.Unmarshal(valAsbytes, &product)
+	var dest = product.Shipments[0].Destination
 
-if product.Shipments[0].Destination != location  {
+if dest != location  {
 // if location == "China" {
 //	if valAsbytes == nil || len(valAsbytes) == 0  {
 		// WIoTP REST API --> event für Device "BCFakeDetector" eventtype "fake-alert" JSON {"PID":"<replace-me>","fake":"true"}
