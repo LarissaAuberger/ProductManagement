@@ -201,18 +201,19 @@ func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte
 
 // read - query function to read key/value pair
 func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-	var key, jsonResp string
+	var key, location, jsonResp string
 	var err error
   if len(args) != 2 {
 		return nil, errors.New("Incorrect number of arguments. Expecting name of the key to query")
 	}
 
-	var location = args [1]
-
+  location = args [1]
 	key = args[0]
 	valAsbytes, err := stub.GetState(key)
 	// var product Product
 	// json.Unmarshal(valAsbytes, &product)
+
+	fmt.Printf("location: %s", location)
 
 if location == "China" {
 //	if valAsbytes == nil || len(valAsbytes) == 0  {
