@@ -216,13 +216,14 @@ func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte,
 
 	fmt.Printf("location: %s", location)
 
-// if location == "China" {
 	if location != product.Shipments[0].Destination {
 		// WIoTP REST API --> event für Device "BCFakeDetector" eventtype "fake-alert" JSON {"PID":"<replace-me>","fake":"true"}
 		url := "http://20wql7.messaging.internetofthings.ibmcloud.com:1883/api/v0002/application/types/FakeDetector/devices/BCFakeDetector/events/fake-alert"
     //https://orgId.messaging.internetofthings.ibmcloud.com:8883/api/v0002/application/types/typeId/devices/deviceId/events/eventId
     //fmt.Println("URL:>", url)
-    var jsonStr = []byte("{ \"PID\":\" %product.id \",\"fake\":\"true\"}")
+
+    var jsonStr = []byte("{ \"PID\":\"" + product.PID + "\",\"fake\":\"true\"}")
+
     req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
     //req.Header.Set("X-Custom-Header", "myvalue")
     req.Header.Set("Content-Type", "application/json")
@@ -253,6 +254,8 @@ func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte,
 
 	return valAsbytes, nil
 }
+
+
 
 func basicAuth(username, password string) string {
   auth := username + ":" + password
