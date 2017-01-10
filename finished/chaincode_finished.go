@@ -63,7 +63,7 @@ func main() {
 }
 
 // Init resets all the things
-func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	if len(args) != 1 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 1")
 	}
@@ -77,7 +77,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
 }
 
 // Invoke isur entry point to invoke a chaincode function
-func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Println("invoke is running " + function)
 
 	// Handle different functions
@@ -97,7 +97,7 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 }
 
 // Query is our entry point for queries
-func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
+func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Println("query is running " + function)
 
 	// Handle different functions
@@ -115,7 +115,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 }
 
 // write - invoke function to add a production to the blockchain
-func (t *SimpleChaincode) register_product(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) register_product(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	////// args
 	// [0]		[1]
 	// pid		jsonString of product
@@ -146,7 +146,7 @@ func (t *SimpleChaincode) register_product(stub *shim.ChaincodeStub, args []stri
 }
 
 
-func (t *SimpleChaincode) add_shipment (stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) add_shipment (stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var err error
 
 	fmt.Println("running add_shipment()")
@@ -179,7 +179,7 @@ func (t *SimpleChaincode) add_shipment (stub *shim.ChaincodeStub, args []string)
 }
 
 // write - invoke function to write key/value pair
-func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var key, value string
 	var err error
 	fmt.Println("running write()")
@@ -200,7 +200,7 @@ func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte
 
 
 // read - query function to read key/value pair
-func (t *SimpleChaincode) read(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var key, location, jsonResp string
 	var err error
   if len(args) != 2 {
@@ -263,7 +263,7 @@ func basicAuth(username, password string) string {
 }
 
 // read - query function to read key/value pair
-func (t *SimpleChaincode) read_number(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
+func (t *SimpleChaincode) read_number(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var key, jsonResp string
 	var err error
 
