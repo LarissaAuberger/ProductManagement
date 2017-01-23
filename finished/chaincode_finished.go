@@ -115,8 +115,6 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	return nil, errors.New("Received unknown function query: " + function)
 }
 
-	
-}
 
 // write - invoke function to add a production to the blockchain
 func (t *SimpleChaincode) register_product(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
