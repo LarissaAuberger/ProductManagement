@@ -201,7 +201,7 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 
 func (t *SimpleChaincode) queryAsManufacturer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
-var key, location string
+var key string
 	var err error
 	
 	if len(args) != 1 {
