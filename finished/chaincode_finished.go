@@ -202,7 +202,7 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 func (t *SimpleChaincode) queryAsManufacturer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 var key, location, jsonResp string
-	var err error
+	var err
 	
 if len(args) != 1 {
 		return nil, errors.New("Incorrect number of arguments. Expecting name of the key to query")
