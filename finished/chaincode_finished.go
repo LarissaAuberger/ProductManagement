@@ -99,7 +99,22 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 // Query is our entry point for queries
 func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	
-	return t.read(stub, args)
+	fmt.Println("query is running " + function)
+
+	// Handle different functions
+	if function == "queryAsConsumer" { //read a variable
+		return t.queryAsConsumer(stub, args)
+	}
+
+	if function == "queryAsManufacturer" { //read a variable
+		return t.queryAsManufacturer(stub, args)
+	}
+
+	fmt.Println("query did not find func: " + function)
+
+	return nil, errors.New("Received unknown function query: " + function)
+}
+
 	
 }
 
@@ -177,7 +192,7 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 		return nil, errors.New("Incorrect number of arguments. Expecting 2. name of the key and value to set")
 	}
 
-	key = args[0] //rename for funsies
+	key = args[0] 
 	value = args[1]
 	err = stub.PutState(key, []byte(value)) //write the variable into the chaincode state
 	if err != nil {
@@ -186,10 +201,24 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 	return nil, nil
 }
 
+func (t *SimpleChaincode) queryAsManufacturer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+
+var key, location, jsonResp string
+	var err error
+	
+if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting name of the key to query")
+	}
+	
+key = args[0]
+	valAsbytes, err := stub.GetState(key)
+	return valAsbytes, nil
+	
+}
 
 
 // read - query function to read key/value pair
-func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func (t *SimpleChaincode) queryAsConsumer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var key, location, jsonResp string
 	var err error
   if len(args) != 2 {
