@@ -41,8 +41,9 @@ type Product struct {
 	PID								string `json:"pid"`
 	ProductionDate 		int `json:"productionDate"`
 	Manufacturer 			string `json:"manufacturer"`
-	PlantCode 				string `json:"plantCode"`
+	PlantCode 	  string `json:"plantCode"`
 	Shipments         []Shipment `json:"shimpents"`
+	Complaints        []Complaint `json:"complaints"`
 }
 
 
@@ -53,6 +54,12 @@ type Shipment struct {
 	Carrier						string `json:"carrier"`
 	DepartureDate			int `json:"departureDate"`
 	ArrivalDate				int `json:"arrivalDate"`
+}
+
+type Complaint struct {
+	Id					string `json:"id"`
+	ComplaintDate				int `json:"complaintDate"`
+	ComplaintReason				string `json:"complaintReason"`
 }
 
 func main() {
@@ -89,6 +96,9 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.register_product(stub, args)
 	} else if function == "add_shipment" {
 		return t.add_shipment(stub, args)
+	}
+	else if function == "add_complaint" {
+		return t.add_complaint(stub, args)
 	}
 
 	fmt.Println("invoke did not find func: " + function)
@@ -170,7 +180,7 @@ func (t *SimpleChaincode) add_shipment (stub shim.ChaincodeStubInterface, args [
 	pAsBytes, err := stub.GetState(product_id)
 	json.Unmarshal(pAsBytes, &p)
 
-  p.Shipments = append(p.Shipments, details)
+  	p.Shipments = append(p.Shipments, details)
 
 	pAsBytes, err = json.Marshal(p)
 	err = stub.PutState(product_id, pAsBytes)
@@ -178,6 +188,13 @@ func (t *SimpleChaincode) add_shipment (stub shim.ChaincodeStubInterface, args [
 		return nil, err
 	}
 	return nil, nil
+}
+
+func (t *SimpleChaincode) add_complaint (stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var err error
+
+	fmt.Println("running add_complaint()")
+
 }
 
 // write - invoke function to write key/value pair
@@ -224,58 +241,16 @@ var key string
 func (t *SimpleChaincode) queryAsConsumer(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var key, location, jsonResp string
 	var err error
-  if len(args) != 2 {
+  	if len(args) != 1 {
 		return nil, errors.New("Incorrect number of arguments. Expecting name of the key to query")
 	}
 
-  location = args [1]
-	key = args[0]
 	valAsbytes, err := stub.GetState(key)
 	var product Product
 	json.Unmarshal(valAsbytes, &product)
 
-
-	fmt.Printf("location: %s", location)
-
-	if location != product.Shipments[0].Destination {
-		// WIoTP REST API --> event für Device "BCFakeDetector" eventtype "fake-alert" JSON {"PID":"<replace-me>","fake":"true"}
-		url := "http://20wql7.messaging.internetofthings.ibmcloud.com:1883/api/v0002/application/types/FakeDetector/devices/BCFakeDetector/events/fake-alert"
-    //https://orgId.messaging.internetofthings.ibmcloud.com:8883/api/v0002/application/types/typeId/devices/deviceId/events/eventId
-    //fmt.Println("URL:>", url)
-
-    var jsonStr = []byte("{ \"PID\":\"" + product.PID + "\",\"fake\":\"true\"}")
-
-    req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
-    //req.Header.Set("X-Custom-Header", "myvalue")
-    req.Header.Set("Content-Type", "application/json")
-		var user string = "a-20wql7-b28fat8pmw"
-		var password string = "T)DwTzn+plN*9tL38N"
-		req.Header.Add("Authorization","Basic "+basicAuth(user, password))
-
-    client := &http.Client{}
-    resp, err := client.Do(req)
-    if err != nil {
-        panic(err)
-    }
-    defer resp.Body.Close()
-    //fmt.Println("response Status:", resp.Status)
-    //fmt.Println("response Headers:", resp.Header)
-    body, _ := ioutil.ReadAll(resp.Body)
-    fmt.Println("response Body:", string(body))
-	} else  {
-
-		}
-
-	//	shipmentAsJsonBytes, _ := json.Marshal (details)
-
-	if err != nil {
-		jsonResp = "{\"Error\":\"Failed to get state for " + key + "\"}"
-		return nil, errors.New(jsonResp)
-	}
-
 	return valAsbytes, nil
 }
-
 
 
 func basicAuth(username, password string) string {
